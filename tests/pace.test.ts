@@ -3,7 +3,9 @@ import {
   calculateDuration,
   calculatePace,
   formatDuration,
+  formatDurationInput,
   formatPace,
+  formatPaceInput,
   parseDuration,
   parsePace,
 } from "@/lib/pace";
@@ -11,7 +13,7 @@ import {
 describe("pace utilities", () => {
   it("calculates pace from distance and duration", () => {
     expect(calculatePace(5.04, 1763)).toBe(350);
-    expect(formatPace(calculatePace(5.04, 1763))).toBe("5:50");
+    expect(formatPace(calculatePace(5.04, 1763))).toBe("5'50");
   });
 
   it("calculates duration from distance and pace", () => {
@@ -21,7 +23,8 @@ describe("pace utilities", () => {
 
   it("converts pace strings and seconds per km", () => {
     expect(parsePace("5:30")).toBe(330);
-    expect(formatPace(330)).toBe("5:30");
+    expect(parsePace("5'30")).toBe(330);
+    expect(formatPace(330)).toBe("5'30");
     expect(parsePace("5:75")).toBeNull();
   });
 
@@ -29,5 +32,15 @@ describe("pace utilities", () => {
     expect(parseDuration("29:23")).toBe(1763);
     expect(parseDuration("1:02:03")).toBe(3723);
     expect(formatDuration(3723)).toBe("1:02:03");
+  });
+
+  it("inserts pace and duration separators while typing digits", () => {
+    expect(formatPaceInput("530")).toBe("5'30");
+    expect(formatPaceInput("1000")).toBe("10'00");
+    expect(formatDurationInput("2923")).toBe("29:23");
+    expect(formatDurationInput("10203")).toBe("1:02:03");
+    expect(formatDurationInput("10:203")).toBe("1:02:03");
+    expect(formatDurationInput("010530")).toBe("01:05:30");
+    expect(formatDurationInput("9:23")).toBe("9:23");
   });
 });

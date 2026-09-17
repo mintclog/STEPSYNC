@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { calculateDuration, formatDuration } from "@/lib/pace";
+import { calculateDuration, formatDuration, formatPace } from "@/lib/pace";
 import type { TargetRun } from "@/lib/types";
 import { validateTargetDistance, validateTargetPace } from "@/lib/validation";
 
@@ -36,7 +36,7 @@ export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProp
       return;
     }
     if (!validateTargetPace(pace)) {
-      setError("목표 페이스는 2:00~20:00 /km 사이로 입력해주세요.");
+      setError("목표 페이스는 2'00~20'00 /km 사이로 입력해주세요.");
       return;
     }
     if (Number(paceSeconds) < 0 || Number(paceSeconds) > 59 || duration === null) {
@@ -73,9 +73,9 @@ export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProp
                 step="0.1"
                 value={distance}
                 onChange={(event) => setDistance(Number(event.target.value))}
-                className="number-face min-w-0 flex-1 bg-transparent text-6xl font-black outline-none sm:text-8xl"
+                className="target-number-input number-face min-w-0 flex-1 bg-transparent text-7xl font-black leading-none outline-none sm:text-9xl"
               />
-              <span className="pb-2 text-xl font-bold text-[#6C6C66]">km</span>
+              <span className="pb-2 text-2xl font-black text-[#6C6C66]">km</span>
             </span>
           </label>
           <div className="mt-5 grid grid-cols-4 gap-2">
@@ -104,10 +104,10 @@ export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProp
                 max="20"
                 value={paceMinutes}
                 onChange={(event) => setPaceMinutes(event.target.value)}
-                className="number-face w-full bg-transparent text-right text-6xl font-black outline-none sm:text-8xl"
+                className="target-number-input number-face w-full bg-transparent text-right text-7xl font-black leading-none outline-none sm:text-9xl"
               />
             </label>
-            <span className="number-face px-2 pb-1 text-5xl font-black sm:text-7xl">:</span>
+            <span className="number-face px-2 pb-1 text-6xl font-black leading-none sm:text-8xl" aria-hidden="true">&apos;</span>
             <label className="min-w-0 flex-1">
               <span className="sr-only">목표 페이스 초</span>
               <input
@@ -118,10 +118,10 @@ export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProp
                 value={paceSeconds}
                 onChange={(event) => setPaceSeconds(event.target.value)}
                 onBlur={() => setPaceSeconds(String(Math.max(0, Number(paceSeconds) || 0)).padStart(2, "0"))}
-                className="number-face w-full bg-transparent text-6xl font-black outline-none sm:text-8xl"
+                className="target-number-input number-face w-full bg-transparent text-7xl font-black leading-none outline-none sm:text-9xl"
               />
             </label>
-            <span className="pb-2 text-xl font-bold text-[#6C6C66]">/km</span>
+            <span className="pb-2 text-2xl font-black text-[#6C6C66]">/km</span>
           </div>
           <p className="mt-4 text-sm leading-6 text-[#6C6C66]">분과 초를 각각 입력하세요. 예상 시간은 코드에서 바로 계산합니다.</p>
         </div>
@@ -134,7 +134,7 @@ export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProp
         </div>
         <div className="text-sm font-bold text-[#DADAD2] sm:text-right">
           <p>{Number.isFinite(distance) ? `${Number(distance.toFixed(2))} km` : "—"}</p>
-          <p>{paceMinutes || "—"}:{paceSeconds || "—"} /km</p>
+          <p>{formatPace(Number.isFinite(pace) ? pace : null)} /km</p>
         </div>
       </div>
 

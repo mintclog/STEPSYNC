@@ -93,7 +93,7 @@ function SongCard({ recommendation, index }: { recommendation: MusicRecommendati
 
 export function ResultsStep({ status, result, error, onRetry, onBack, onRestart }: ResultsStepProps) {
   if (status === "loading") {
-    return <BeatLoader label="러닝 패턴을 분석하고 실제 곡의 BPM을 검증하고 있습니다" />;
+    return <BeatLoader label="리듬을 계산하고 실제 곡의 BPM을 검증하고 있습니다" />;
   }
 
   if (status === "error" || !result) {
@@ -168,6 +168,9 @@ export function ResultsStep({ status, result, error, onRetry, onBack, onRestart 
           <p className="text-xl font-bold leading-8 sm:text-2xl">{analysis.summary}</p>
           <p className="mt-5 leading-7 text-[#5C5C56]">{analysis.pace_stability_summary}</p>
           <p className="mt-3 leading-7 text-[#5C5C56]">{music.energy_guidance}</p>
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-[#6C6C66]">
+            Algorithmic rhythm · Web-verified tracks
+          </p>
           {analysis.missing_data.length > 0 ? (
             <p className="mt-5 border-l-4 border-[#C7F000] pl-4 text-sm leading-6 text-[#5C5C56]">부족한 데이터: {analysis.missing_data.join(", ")}</p>
           ) : null}
@@ -180,7 +183,7 @@ export function ResultsStep({ status, result, error, onRetry, onBack, onRestart 
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#6C6C66]">Playlist candidates</p>
             <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">추천곡 {recommendations.length}</h2>
           </div>
-          <p className="max-w-md text-xs leading-5 text-[#6C6C66]">MATCH는 내부 휴리스틱 적합도이며 과학적 성공 확률이나 효과 보장이 아닙니다.</p>
+          <p className="max-w-md text-xs leading-5 text-[#6C6C66]">MATCH는 코드로 계산한 내부 휴리스틱 적합도이며 AI 예측 확률, 과학적 성공 확률 또는 효과 보장이 아닙니다.</p>
         </div>
         <div className="grid gap-4 lg:grid-cols-2">
           {recommendations.map((recommendation, index) => (

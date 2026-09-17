@@ -2,6 +2,8 @@ export type RunSource = "integration" | "screenshot" | "manual";
 
 export type AnalysisConfidence = "low" | "medium" | "high";
 
+export type EnergyProfile = "steady" | "balanced" | "intense";
+
 export interface RunSplit {
   distance_km: number;
   pace_sec_per_km: number | null;
@@ -46,6 +48,17 @@ export interface VerificationSource {
   url: string;
 }
 
+export interface MusicCandidate {
+  title: string;
+  artist: string;
+  bpm: number;
+  bpm_confidence: "medium" | "high";
+  genres: string[];
+  energy_profile: EnergyProfile;
+  album_art_url: string | null;
+  verification_sources: VerificationSource[];
+}
+
 export interface MusicRecommendation {
   title: string;
   artist: string;
@@ -78,6 +91,17 @@ export interface RecommendationResult {
     energy_guidance: string;
   };
   recommendations: MusicRecommendation[];
+}
+
+export interface RhythmAnalysis {
+  running_analysis: RecommendationResult["running_analysis"];
+  music_profile: RecommendationResult["music_profile"];
+  diagnostics: {
+    cadence_sample_count: number;
+    rhythm_center_bpm: number;
+    desired_energy_profile: EnergyProfile;
+    uses_generic_cadence_prior: boolean;
+  };
 }
 
 export type ApiErrorCode =

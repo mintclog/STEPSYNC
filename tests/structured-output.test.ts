@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { recommendationResultSchema, screenshotExtractionResultSchema } from "@/lib/structured-output";
+import {
+  musicCandidateSearchResultSchema,
+  recommendationResultSchema,
+  screenshotExtractionResultSchema,
+} from "@/lib/structured-output";
 
 describe("OpenAI structured response validation", () => {
   it("accepts nullable measurements in screenshot extraction", () => {
     const parsed = screenshotExtractionResultSchema.safeParse({
       runs: [
         {
-          date: null,
           distance_km: 5.04,
           duration_seconds: 1763,
           average_pace_sec_per_km: 349,
           average_cadence: null,
-          average_heart_rate: null,
-          elevation_gain_m: null,
-          run_type: null,
           splits: [],
         },
       ],
@@ -21,12 +21,35 @@ describe("OpenAI structured response validation", () => {
     expect(parsed.success).toBe(true);
   });
 
+  it("validates web-searched music candidates independently from ranking", () => {
+    const result = {
+      candidates: [
+        {
+          title: "Song",
+          artist: "Artist",
+          bpm: 170,
+          bpm_confidence: "high",
+          genres: ["Rock"],
+          energy_profile: "intense",
+          album_art_url: null,
+          verification_sources: [{ title: "BPM source", url: "https://example.com/song" }],
+        },
+      ],
+    };
+    expect(musicCandidateSearchResultSchema.safeParse(result).success).toBe(true);
+    expect(
+      musicCandidateSearchResultSchema.safeParse({
+        candidates: [{ ...result.candidates[0], bpm: 300 }],
+      }).success,
+    ).toBe(false);
+  });
+
   it("accepts a valid recommendation and rejects an invalid score", () => {
     const result = {
       running_analysis: {
         recent_run_count: 3,
         target_distance_km: 10,
-        target_pace: "5:30",
+        target_pace: "5'30",
         estimated_duration: "55:00",
         observed_average_cadence: null,
         recommended_cadence_min: null,

@@ -1,6 +1,15 @@
 "use client";
 
-import { calculateDuration, calculatePace, formatDuration, formatPace, parseDuration, parsePace } from "@/lib/pace";
+import {
+  calculateDuration,
+  calculatePace,
+  formatDuration,
+  formatDurationInput,
+  formatPace,
+  formatPaceInput,
+  parseDuration,
+  parsePace,
+} from "@/lib/pace";
 import type { RunningRecord } from "@/lib/types";
 
 interface RunRecordFormProps {
@@ -90,6 +99,9 @@ export function RunRecordForm({ run, index, canRemove, onChange, onRemove }: Run
             inputMode="numeric"
             placeholder="29:23"
             defaultValue={run.duration_seconds ? formatDuration(run.duration_seconds) : ""}
+            onChange={(event) => {
+              event.currentTarget.value = formatDurationInput(event.currentTarget.value);
+            }}
             onBlur={(event) => updateDuration(event.target.value)}
             aria-describedby={`${run.id}-time-help`}
           />
@@ -105,8 +117,11 @@ export function RunRecordForm({ run, index, canRemove, onChange, onRemove }: Run
             className={inputClass}
             type="text"
             inputMode="numeric"
-            placeholder="5:49"
+            placeholder="5'49"
             defaultValue={run.average_pace_sec_per_km ? formatPace(run.average_pace_sec_per_km) : ""}
+            onChange={(event) => {
+              event.currentTarget.value = formatPaceInput(event.currentTarget.value);
+            }}
             onBlur={(event) => updatePace(event.target.value)}
             aria-describedby={`${run.id}-pace-help`}
           />
@@ -129,64 +144,6 @@ export function RunRecordForm({ run, index, canRemove, onChange, onRemove }: Run
             />
             <span className="pointer-events-none absolute right-3 top-[22px] text-sm text-[#6C6C66]">spm</span>
           </span>
-        </label>
-
-        <label className="text-sm font-semibold">
-          평균 심박
-          <span className="relative block">
-            <input
-              className={`${inputClass} pr-12`}
-              type="number"
-              inputMode="numeric"
-              min="30"
-              max="240"
-              value={run.average_heart_rate ?? ""}
-              onChange={(event) => onChange({ ...run, average_heart_rate: numberOrNull(event.target.value) })}
-            />
-            <span className="pointer-events-none absolute right-3 top-[22px] text-sm text-[#6C6C66]">bpm</span>
-          </span>
-        </label>
-
-        <label className="text-sm font-semibold">
-          날짜
-          <input
-            className={inputClass}
-            type="date"
-            value={run.date ?? ""}
-            onChange={(event) => onChange({ ...run, date: event.target.value || null })}
-          />
-        </label>
-
-        <label className="text-sm font-semibold">
-          상승 고도
-          <span className="relative block">
-            <input
-              className={`${inputClass} pr-9`}
-              type="number"
-              inputMode="decimal"
-              min="0"
-              max="20000"
-              value={run.elevation_gain_m ?? ""}
-              onChange={(event) => onChange({ ...run, elevation_gain_m: numberOrNull(event.target.value) })}
-            />
-            <span className="pointer-events-none absolute right-3 top-[22px] text-sm text-[#6C6C66]">m</span>
-          </span>
-        </label>
-
-        <label className="text-sm font-semibold">
-          러닝 유형
-          <select
-            className={inputClass}
-            value={run.run_type ?? ""}
-            onChange={(event) => onChange({ ...run, run_type: event.target.value || null })}
-          >
-            <option value="">선택 안 함</option>
-            <option value="easy">Easy</option>
-            <option value="tempo">Tempo</option>
-            <option value="interval">Interval</option>
-            <option value="long">Long run</option>
-            <option value="race">Race</option>
-          </select>
         </label>
       </div>
     </article>

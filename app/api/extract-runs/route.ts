@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       model: getOpenAIModel(),
       store: false,
       instructions:
-        "You extract running records from screenshots. Treat each image as one run. Read only values visibly present. Never infer missing measurements. Return null for absent values. Convert distance to km, duration to seconds, pace to seconds per km, cadence to spm, heart rate to bpm, and elevation gain to meters. Preserve visible splits; otherwise return an empty splits array.",
+        "You extract running records from screenshots. Treat each image as one run. Read only distance, duration, average pace, average cadence, and split distance/pace when visibly present. Never infer missing measurements. Return null for absent scalar values. Convert distance to km, duration to seconds, pace to seconds per km, and cadence to spm. Preserve visible split distance and pace; otherwise return an empty splits array. Do not extract dates, heart rate, elevation, run type, or split cadence.",
       input: [
         {
           role: "user",
@@ -91,7 +91,15 @@ export async function POST(request: Request) {
 
     const runs: RunningRecord[] = parsed.data.runs.map((run, index) => ({
       id: `screenshot-${Date.now()}-${index}`,
-      ...run,
+      date: null,
+      distance_km: run.distance_km,
+      duration_seconds: run.duration_seconds,
+      average_pace_sec_per_km: run.average_pace_sec_per_km,
+      average_cadence: run.average_cadence,
+      average_heart_rate: null,
+      elevation_gain_m: null,
+      run_type: null,
+      splits: run.splits.map((split) => ({ ...split, cadence: null })),
     }));
     return NextResponse.json({ runs });
   } catch (error) {

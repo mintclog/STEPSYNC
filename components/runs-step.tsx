@@ -122,7 +122,7 @@ export function RunsStep({ runs, source, onRunsChange, onSourceChange, onContinu
           <button
             type="button"
             onClick={() => setMode("screenshot")}
-            className="min-h-64 rounded-xl border-2 border-[#171717] bg-white p-6 text-left transition-transform hover:-translate-y-1"
+            className="run-source-card min-h-64 rounded-xl border border-[#D9D9D2] bg-white p-6 text-left"
           >
             <span className="text-xs font-black uppercase tracking-[0.18em]">Screenshot</span>
             <span className="mt-8 block text-xl font-bold">기록 화면 올리기</span>
@@ -133,7 +133,7 @@ export function RunsStep({ runs, source, onRunsChange, onSourceChange, onContinu
           <button
             type="button"
             onClick={setManual}
-            className="min-h-64 rounded-xl border border-[#D9D9D2] bg-white p-6 text-left transition-transform hover:-translate-y-1"
+            className="run-source-card min-h-64 rounded-xl border border-[#D9D9D2] bg-white p-6 text-left"
           >
             <span className="text-xs font-black uppercase tracking-[0.18em]">Manual</span>
             <span className="mt-8 block text-xl font-bold">직접 입력할게요</span>

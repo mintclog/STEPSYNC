@@ -111,7 +111,7 @@ export function RunWizard() {
             <div className="border-y-2 border-[#171717] py-8 lg:border-y-0 lg:border-l-2 lg:py-16 lg:pl-12">
               <div className="flex items-end justify-between gap-4 border-b border-[#A8A8A0] pb-7">
                 <span className="text-xs font-black uppercase tracking-[0.18em]">Target pace</span>
-                <span><strong className="number-face text-5xl font-black sm:text-6xl">5:30</strong> <small className="font-bold">/km</small></span>
+                <span><strong className="number-face text-5xl font-black sm:text-6xl">5&apos;30</strong> <small className="font-bold">/km</small></span>
               </div>
               <div className="flex items-end justify-between gap-4 border-b border-[#A8A8A0] py-7">
                 <span className="text-xs font-black uppercase tracking-[0.18em]">Distance</span>

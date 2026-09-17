@@ -1,5 +1,5 @@
 const CLOCK_PATTERN = /^(?:(\d+):)?([0-5]?\d):([0-5]\d)$/;
-const PACE_PATTERN = /^(\d{1,2}):([0-5]\d)$/;
+const PACE_PATTERN = /^(\d{1,2})[':]([0-5]\d)$/;
 
 export function parsePace(value: string): number | null {
   const match = value.trim().match(PACE_PATTERN);
@@ -15,7 +15,33 @@ export function formatPace(secondsPerKm: number | null): string {
     return "—";
   }
   const rounded = Math.round(secondsPerKm);
-  return `${Math.floor(rounded / 60)}:${String(rounded % 60).padStart(2, "0")}`;
+  return `${Math.floor(rounded / 60)}'${String(rounded % 60).padStart(2, "0")}`;
+}
+
+export function formatPaceInput(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, -2)}'${digits.slice(-2)}`;
+}
+
+export function formatDurationInput(value: string): string {
+  const sanitized = value.replace(/[^\d:]/g, "");
+  const groups = sanitized.split(":");
+  if (groups.length >= 3) {
+    return groups
+      .slice(0, 3)
+      .map((part) => part.slice(0, 2))
+      .join(":");
+  }
+  if (groups.length === 2 && groups[1].length <= 2) {
+    return `${groups[0].slice(0, 2)}:${groups[1]}`;
+  }
+
+  const digits = sanitized.replace(/\D/g, "").slice(0, 6);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  if (digits.length === 5) return `${digits.slice(0, 1)}:${digits.slice(1, 3)}:${digits.slice(3)}`;
+  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4, 6)}`;
 }
 
 export function parseDuration(value: string): number | null {

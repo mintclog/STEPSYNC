@@ -6,19 +6,14 @@ export const screenshotExtractionResultSchema = z.object({
   runs: z
     .array(
       z.object({
-        date: z.string().nullable(),
         distance_km: nullableNumber,
         duration_seconds: nullableNumber,
         average_pace_sec_per_km: nullableNumber,
         average_cadence: nullableNumber,
-        average_heart_rate: nullableNumber,
-        elevation_gain_m: nullableNumber,
-        run_type: z.string().nullable(),
         splits: z.array(
           z.object({
             distance_km: z.number(),
             pace_sec_per_km: nullableNumber,
-            cadence: nullableNumber,
           }),
         ),
       }),
@@ -76,9 +71,8 @@ const splitJsonSchema = {
   properties: {
     distance_km: { type: "number" },
     pace_sec_per_km: { type: ["number", "null"] },
-    cadence: { type: ["number", "null"] },
   },
-  required: ["distance_km", "pace_sec_per_km", "cadence"],
+  required: ["distance_km", "pace_sec_per_km"],
 } as const;
 
 export const screenshotExtractionJsonSchema = {
@@ -93,25 +87,17 @@ export const screenshotExtractionJsonSchema = {
         type: "object",
         additionalProperties: false,
         properties: {
-          date: { type: ["string", "null"] },
           distance_km: { type: ["number", "null"] },
           duration_seconds: { type: ["number", "null"] },
           average_pace_sec_per_km: { type: ["number", "null"] },
           average_cadence: { type: ["number", "null"] },
-          average_heart_rate: { type: ["number", "null"] },
-          elevation_gain_m: { type: ["number", "null"] },
-          run_type: { type: ["string", "null"] },
           splits: { type: "array", items: splitJsonSchema },
         },
         required: [
-          "date",
           "distance_km",
           "duration_seconds",
           "average_pace_sec_per_km",
           "average_cadence",
-          "average_heart_rate",
-          "elevation_gain_m",
-          "run_type",
           "splits",
         ],
       },
@@ -130,84 +116,68 @@ const verificationSourceJsonSchema = {
   required: ["title", "url"],
 } as const;
 
-export const recommendationJsonSchema = {
+export const musicCandidateSearchResultSchema = z.object({
+  candidates: z
+    .array(
+      z.object({
+        title: z.string().min(1),
+        artist: z.string().min(1),
+        bpm: z.number().min(40).max(240),
+        bpm_confidence: z.enum(["medium", "high"]),
+        genres: z.array(z.string().min(1)).max(8),
+        energy_profile: z.enum(["steady", "balanced", "intense"]),
+        album_art_url: z.string().url().nullable(),
+        verification_sources: z
+          .array(
+            z.object({
+              title: z.string().min(1),
+              url: z.string().url(),
+            }),
+          )
+          .min(1)
+          .max(4),
+      }),
+    )
+    .max(24),
+});
+
+export const musicCandidateSearchJsonSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    running_analysis: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        recent_run_count: { type: "integer", minimum: 3, maximum: 5 },
-        target_distance_km: { type: "number" },
-        target_pace: { type: "string" },
-        estimated_duration: { type: "string" },
-        observed_average_cadence: { type: ["number", "null"] },
-        recommended_cadence_min: { type: ["number", "null"] },
-        recommended_cadence_max: { type: ["number", "null"] },
-        analysis_confidence: { type: "string", enum: ["low", "medium", "high"] },
-        missing_data: { type: "array", items: { type: "string" } },
-        pace_stability_summary: { type: "string" },
-        summary: { type: "string" },
-      },
-      required: [
-        "recent_run_count",
-        "target_distance_km",
-        "target_pace",
-        "estimated_duration",
-        "observed_average_cadence",
-        "recommended_cadence_min",
-        "recommended_cadence_max",
-        "analysis_confidence",
-        "missing_data",
-        "pace_stability_summary",
-        "summary",
-      ],
-    },
-    music_profile: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        primary_bpm_min: { type: "number" },
-        primary_bpm_max: { type: "number" },
-        half_time_bpm_min: { type: "number" },
-        half_time_bpm_max: { type: "number" },
-        energy_guidance: { type: "string" },
-      },
-      required: [
-        "primary_bpm_min",
-        "primary_bpm_max",
-        "half_time_bpm_min",
-        "half_time_bpm_max",
-        "energy_guidance",
-      ],
-    },
-    recommendations: {
+    candidates: {
       type: "array",
-      maxItems: 20,
+      maxItems: 24,
       items: {
         type: "object",
         additionalProperties: false,
         properties: {
           title: { type: "string" },
           artist: { type: "string" },
-          bpm: { type: "number" },
-          match_score: { type: "number", minimum: 0, maximum: 1 },
-          reason: { type: "string" },
+          bpm: { type: "number", minimum: 40, maximum: 240 },
+          bpm_confidence: { type: "string", enum: ["medium", "high"] },
+          genres: { type: "array", maxItems: 8, items: { type: "string" } },
+          energy_profile: { type: "string", enum: ["steady", "balanced", "intense"] },
           album_art_url: { type: ["string", "null"] },
-          verification_sources: { type: "array", items: verificationSourceJsonSchema },
+          verification_sources: {
+            type: "array",
+            minItems: 1,
+            maxItems: 4,
+            items: verificationSourceJsonSchema,
+          },
         },
         required: [
           "title",
           "artist",
           "bpm",
-          "match_score",
-          "reason",
+          "bpm_confidence",
+          "genres",
+          "energy_profile",
           "album_art_url",
           "verification_sources",
         ],
       },
     },
   },
-  required: ["running_analysis", "music_profile", "recommendations"],
+  required: ["candidates"],
 } as const;
