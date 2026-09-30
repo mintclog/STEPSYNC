@@ -172,6 +172,7 @@ export function RunWizard() {
       </main>
       <footer className="border-t border-[#D9D9D2] px-4 py-6 text-center text-xs text-[#6C6C66]">
         STEPSYNC는 음악을 재생하지 않으며, 추천 적합도는 과학적·의학적 효과를 보장하지 않습니다.
+        <p className="mt-3">BPM data provided by <a href="https://getsongbpm.com" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">GetSongBPM</a></p>
       </footer>
     </div>
   );

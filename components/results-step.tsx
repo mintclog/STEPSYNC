@@ -76,7 +76,7 @@ function SongCard({ recommendation, index }: { recommendation: MusicRecommendati
         </div>
         {sources.length > 0 ? (
           <details className="mt-2 text-xs text-[#6C6C66]">
-            <summary className="min-h-11 cursor-pointer content-center font-bold">BPM 검증 출처</summary>
+            <summary className="min-h-11 cursor-pointer content-center font-bold">BPM 정보 출처</summary>
             <ul className="space-y-2 pb-1">
               {sources.map((source, sourceIndex) => (
                 <li key={`${source.url}-${sourceIndex}`}>
@@ -93,22 +93,23 @@ function SongCard({ recommendation, index }: { recommendation: MusicRecommendati
 
 export function ResultsStep({ status, result, error, onRetry, onBack, onRestart }: ResultsStepProps) {
   if (status === "loading") {
-    return <BeatLoader label="리듬을 계산하고 실제 곡의 BPM을 검증하고 있습니다" />;
+    return <BeatLoader label="리듬을 계산하고 해당 BPM의 음악을 찾고 있습니다" />;
   }
 
   if (status === "error" || !result) {
-    const isMissingKey = error?.code === "missing_api_key";
+    const isBpmKey = error?.code === "missing_bpm_api_key";
+    const isMissingKey = isBpmKey || error?.code === "missing_api_key";
     return (
       <section className="mx-auto max-w-2xl py-12 text-center" aria-labelledby="result-error-title">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-[#6C6C66]">Analysis paused</p>
         <h1 id="result-error-title" className="mt-4 text-3xl font-black tracking-[-0.04em] sm:text-5xl">
-          {isMissingKey ? "OpenAI API Key가 필요합니다." : "분석을 완료하지 못했습니다."}
+          {isMissingKey ? `${isBpmKey ? "GetSongBPM" : "OpenAI"} API Key가 필요합니다.` : "분석을 완료하지 못했습니다."}
         </h1>
         <p className="mx-auto mt-5 max-w-xl leading-7 text-[#5C5C56]">
           {error?.message || "조건에 맞는 추천 결과가 비어 있습니다. 다시 시도해주세요."}
         </p>
         {isMissingKey ? (
-          <pre className="mt-7 overflow-x-auto rounded-[10px] bg-[#171717] p-5 text-left text-sm text-[#C7F000]">OPENAI_API_KEY=내_API_KEY</pre>
+          <pre className="mt-7 overflow-x-auto rounded-[10px] bg-[#171717] p-5 text-left text-sm text-[#C7F000]">{isBpmKey ? "GETSONGBPM_API_KEY=내_API_KEY" : "OPENAI_API_KEY=내_API_KEY"}</pre>
         ) : null}
         <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
           <button type="button" onClick={onBack} className="min-h-14 rounded-[10px] border border-[#171717] px-7 font-bold">입력 확인</button>
@@ -182,6 +183,7 @@ export function ResultsStep({ status, result, error, onRetry, onBack, onRestart 
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[#6C6C66]">Playlist candidates</p>
             <h2 className="mt-2 text-3xl font-black tracking-[-0.04em]">추천곡 {recommendations.length}</h2>
+            <p className="mt-2 text-xs leading-5 text-[#6C6C66]">BPM은 GetSongBPM의 단일 출처 정보입니다. 음악 에너지는 별도 분석하지 않아 중립값으로 반영합니다.</p>
           </div>
           <p className="max-w-md text-xs leading-5 text-[#6C6C66]">MATCH는 코드로 계산한 내부 휴리스틱 적합도이며 AI 예측 확률, 과학적 성공 확률 또는 효과 보장이 아닙니다.</p>
         </div>

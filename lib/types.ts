@@ -105,6 +105,7 @@ export interface RhythmAnalysis {
 }
 
 export type ApiErrorCode =
+  | "missing_bpm_api_key"
   | "missing_api_key"
   | "invalid_request"
   | "image_analysis_failed"
