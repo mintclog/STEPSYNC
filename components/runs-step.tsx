@@ -32,7 +32,9 @@ export function createEmptyRun(index: number): RunningRecord {
 }
 
 export function RunsStep({ runs, source, onRunsChange, onSourceChange, onContinue }: RunsStepProps) {
-  const [mode, setMode] = useState<Mode>(source === "screenshot" && runs[0]?.distance_km ? "review" : "choose");
+  const [mode, setMode] = useState<Mode>(() => runs.some((run) => run.distance_km !== null)
+    ? source === "screenshot" ? "review" : "manual"
+    : "choose");
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -164,6 +166,7 @@ export function RunsStep({ runs, source, onRunsChange, onSourceChange, onContinu
           >
             <p className="text-xl font-bold">러닝 기록 스크린샷 3~5장</p>
             <p className="mt-2 text-sm leading-6 text-[#6C6C66]">한 러닝당 대표 화면 1장 · JPG, PNG, WebP · 장당 최대 8MB</p>
+            <p className="mt-3 text-sm leading-6 text-[#5C5C56]">분석 시 이미지 전체가 OpenAI로 전송됩니다. 이름, 지도, 심박 등 불필요한 개인정보는 먼저 가려주세요.</p>
             <input
               ref={fileInput}
               className="sr-only"

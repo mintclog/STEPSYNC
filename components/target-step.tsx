@@ -9,6 +9,14 @@ interface TargetStepProps {
   initialTarget: TargetRun | null;
   onBack: () => void;
   onContinue: (target: TargetRun) => void;
+  draft?: TargetDraft;
+  onDraftChange?: (draft: TargetDraft) => void;
+}
+
+export interface TargetDraft {
+  distance: number;
+  paceMinutes: string;
+  paceSeconds: string;
 }
 
 const QUICK_DISTANCES = [
@@ -18,14 +26,18 @@ const QUICK_DISTANCES = [
   { label: "Half", value: 21.0975 },
 ];
 
-export function TargetStep({ initialTarget, onBack, onContinue }: TargetStepProps) {
-  const [distance, setDistance] = useState(initialTarget?.distance_km ?? 10);
-  const [paceMinutes, setPaceMinutes] = useState(
-    initialTarget ? Math.floor(initialTarget.pace_sec_per_km / 60).toString() : "5",
-  );
-  const [paceSeconds, setPaceSeconds] = useState(
-    initialTarget ? String(initialTarget.pace_sec_per_km % 60).padStart(2, "0") : "30",
-  );
+export function TargetStep({ initialTarget, onBack, onContinue, draft, onDraftChange }: TargetStepProps) {
+  const [localDraft, setLocalDraft] = useState<TargetDraft>({
+    distance: initialTarget?.distance_km ?? 10,
+    paceMinutes: initialTarget ? Math.floor(initialTarget.pace_sec_per_km / 60).toString() : "5",
+    paceSeconds: initialTarget ? String(initialTarget.pace_sec_per_km % 60).padStart(2, "0") : "30",
+  });
+  const currentDraft = draft ?? localDraft;
+  const { distance, paceMinutes, paceSeconds } = currentDraft;
+  const updateDraft = (change: Partial<TargetDraft>) => (onDraftChange ?? setLocalDraft)({ ...currentDraft, ...change });
+  const setDistance = (distance: number) => updateDraft({ distance });
+  const setPaceMinutes = (paceMinutes: string) => updateDraft({ paceMinutes });
+  const setPaceSeconds = (paceSeconds: string) => updateDraft({ paceSeconds });
   const [error, setError] = useState("");
   const pace = Number(paceMinutes) * 60 + Number(paceSeconds);
   const duration = useMemo(() => calculateDuration(distance, pace), [distance, pace]);

@@ -7,6 +7,15 @@ interface PreferencesStepProps {
   initialPreferences: MusicPreferences;
   onBack: () => void;
   onSubmit: (preferences: MusicPreferences) => void;
+  draft?: PreferencesDraft;
+  onDraftChange?: (draft: PreferencesDraft) => void;
+}
+
+export interface PreferencesDraft {
+  genres: string[];
+  excludedGenres: string[];
+  likedArtists: string;
+  excludedArtists: string;
 }
 
 const GENRES = ["K-pop", "J-pop", "Rock", "Hip-hop", "EDM"];
@@ -19,11 +28,20 @@ function parseList(value: string): string[] {
     .slice(0, 20);
 }
 
-export function PreferencesStep({ initialPreferences, onBack, onSubmit }: PreferencesStepProps) {
-  const [genres, setGenres] = useState(initialPreferences.genres);
-  const [excludedGenres, setExcludedGenres] = useState(initialPreferences.excluded_genres);
-  const [likedArtists, setLikedArtists] = useState(initialPreferences.liked_artists.join(", "));
-  const [excludedArtists, setExcludedArtists] = useState(initialPreferences.excluded_artists.join(", "));
+export function PreferencesStep({ initialPreferences, onBack, onSubmit, draft, onDraftChange }: PreferencesStepProps) {
+  const [localDraft, setLocalDraft] = useState<PreferencesDraft>({
+    genres: initialPreferences.genres,
+    excludedGenres: initialPreferences.excluded_genres,
+    likedArtists: initialPreferences.liked_artists.join(", "),
+    excludedArtists: initialPreferences.excluded_artists.join(", "),
+  });
+  const currentDraft = draft ?? localDraft;
+  const { genres, excludedGenres, likedArtists, excludedArtists } = currentDraft;
+  const updateDraft = (change: Partial<PreferencesDraft>) => (onDraftChange ?? setLocalDraft)({ ...currentDraft, ...change });
+  const setGenres = (genres: string[]) => updateDraft({ genres });
+  const setExcludedGenres = (excludedGenres: string[]) => updateDraft({ excludedGenres });
+  const setLikedArtists = (likedArtists: string) => updateDraft({ likedArtists });
+  const setExcludedArtists = (excludedArtists: string) => updateDraft({ excludedArtists });
 
   const toggle = (value: string, list: string[], setList: (next: string[]) => void) => {
     setList(list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
